@@ -1,6 +1,6 @@
 ## PyHeap
 
-PyHeap is a Python wrapper around [RefHeap](https://reafheap.com) API. Originally, it was created as a Python learning project for myself. PyHeap is still new and doesn't do much error checking, but it's a start.
+PyHeap is a Python wrapper around [RefHeap](https://refheap.com) API. Originally, it was created as a Python learning project for myself. PyHeap is still new and doesn't do much error checking, but it's a start.
 
 You can get the PyHeap source from GitHub:
 
