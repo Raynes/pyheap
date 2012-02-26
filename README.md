@@ -14,11 +14,11 @@ Add the pyheap folder to your project and import `refheap`:
 
     from pyheap import refheap
   
-From there, you can instantiate a `Paste` object, optionally passing in _username_ and _api-token_ (**Note:** username and token are required for some API calls.)
+From there, you can instantiate a `Paste` object, optionally passing in _username_ and _api-token_ (**Note:** username and token are required for some API calls):
 
     p = refheap.Paste('username', 'token')
   
-API calls are made through this new `Paste` object. A tuple containing the web service response and the content is returned:
+API calls are made through this new `Paste` object. A tuple containing the web service response and the content is returned. Here is some copy/paste from IDLE showing some basic usage:
 
     >>> p = Paste('username', 'api-token')
     >>> resp = p.get(1)
