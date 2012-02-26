@@ -1,30 +1,45 @@
-## PyHeap
+# pyheap
 
-PyHeap is a Python wrapper around [RefHeap](https://refheap.com) API. Originally, it was created as a Python learning project for myself. PyHeap is still new and doesn't do much error checking, but it's a start.
+pyheap is a Python implementation of the [RefHeap](https://refheap.com) API. It was originally created as a Python learning project for myself, but still continues to be tweaked and improved.
 
-You can get the PyHeap source from GitHub:
+## Setup
+
+You can obtain the pyheap source through [GitHub](https://github.com/aburdette/pyheap):
 
     git clone git://github.com/aburdette/pyheap.git
+  
+## Usage
 
-Currently, you can import pyheap to a project by adding the folder and usign the line:
+Add the pyheap folder to your project and import `refheap`:
 
-    from pyheap.refheap import *
+    from pyheap import refheap
+  
+From there, you can instantiate a `Paste` object, optionally passing in _username_ and _api-token_ (**Note:** username and token are required for some API calls.)
 
-Here's some copy/paste from working with pyheap in IDLE:
+    p = refheap.Paste('username', 'token')
+  
+API calls are made through this new `Paste` object. A tuple containing the web service response and the content is returned:
 
-    >>> heap = Refheap('nyrd', 'a87ac957-a709-4c4b-9f40-ab3ce80b01db')
-    >>> paste = heap.get(1)
-    >>> print(paste)
-    {u'language': u'Clojure', u'url': u'https://refheap.com/paste/1', u'lines': 1, u'private': False, u'user': u'raynes', u'date': u'2012-01-04T01:44:22.964Z', u'paste-id': u'1', u'contents': u'(begin)'}
-    >>> print(paste['user'])
-    raynes
-    >>> paste = heap.create('Posted by pyheap!', True)
-    >>> print(paste)
-    {u'fork': None, u'language': u'Plain Text', u'url': u'https://refheap.com/paste/4f485a2ee4b0859a612220ab', u'lines': 1, u'private': True, u'user': u'nyrd', u'date': u'2012-02-25T03:49:02.056Z', u'paste-id': u'4f485a2ee4b0859a612220ab', u'contents': u'Posted by pyheap!'}
-    >>> print(paste['user'])
-    nyrd
-    >>> paste = heap.edit(paste['paste-id'], 'PyHeap is awesome!')
-    >>> print(paste['contents'])
-    PyHeap is awesome!
-    >>> heap.delete(paste['paste-id'])
-    >>> 
+    >>> p = Paste('username', 'api-token')
+    >>> resp = p.get(1)
+    >>> print(resp[0]['status'])
+    200
+    >>> print(resp[1]['contents'])
+    (begin)
+    >>> resp = p.create('This is a new private paste.', True)
+    >>> print(resp[0]['status'])
+    201
+    >>> print(resp[1]['private'])
+    True
+    >>> print(resp[1]['contents'])
+    This is a new private paste.
+    >>> resp = p.delete(resp[1]['paste-id'])
+    >>> print(resp[0]['status'])
+    204
+  
+## License
+
+Copyright © 2012 Andre Burdette
+
+Distributed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html), same as RefHeap.
+
