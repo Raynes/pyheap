@@ -4,7 +4,7 @@ import urllib2
 from helpers import *
 from urllib import urlencode
 
-class Refheap:
+class Paste:
     base_url = 'https://refheap.com/api'
     
     def __init__(self, username = None, token = None):
