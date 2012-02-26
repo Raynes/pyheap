@@ -25,25 +25,31 @@ class Paste:
     try:
       url = '%s/paste' % (self.base_url)
       conn = Http(disable_ssl_certificate_validation=True)
-      #conn.add_credentials(self.credentials['username'], self.credentials['token'])
-      data = {'contents':text, 'private':int(private), 'language':lang}
-      data.update(self.credentials)
-      resp, content = conn.request(url, 'POST', urlencode(data))
+      data = {'contents':text, 'private':str.lower(str(private)), 'language':lang}
+      data.update(self.credentials) # Add username/token to data hash
+      headers = {'Content-Type':'application/x-www-form-urlencoded'}
+      resp, content = conn.request(url, 'POST', urlencode(data), headers)
     except HTTPError, e:return e
     else:return (resp, content)
     
   # Edit paste
-  def edit():
+  def edit(self):
     '''Edits a paste on RefHeap.'''
     return None
     
   # Fork paste
-  def fork():
+  def fork(self, id):
     '''Creates a fork of a paste on RefHeap.'''
-    return None
+    try:
+      url = '%s/paste/%s/fork' % (self.base_url, id)
+      conn = Http(disable_ssl_certificate_validation=True)
+      headers = {'Content-Type':'application/x-www-form-urlencoded'}
+      resp, content = conn.request(url, 'POST', urlencode(self.credentials), headers)
+    except HTTPError, e:return e
+    else:return (resp, content)
     
   # Delete paste
-  def delete():
+  def delete(self):
     '''Deletes a paste from RefHeap.'''
     return None
     
