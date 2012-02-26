@@ -17,25 +17,37 @@ class Paste:
       conn = Http(disable_ssl_certificate_validation=True)
       resp, content = conn.request(url, 'GET')
     except HTTPError, e:return e
-    else:return (resp, content)
+    else:return (resp, loads(content))
     
   # Create paste
   def create(self, text, private=False, lang='Plain Text'):
     '''Creates a new paste on RefHeap.'''
     try:
       url = '%s/paste' % (self.base_url)
-      conn = Http(disable_ssl_certificate_validation=True)
       data = {'contents':text, 'private':str.lower(str(private)), 'language':lang}
       data.update(self.credentials) # Add username/token to data hash
       headers = {'Content-Type':'application/x-www-form-urlencoded'}
+      conn = Http(disable_ssl_certificate_validation=True)
       resp, content = conn.request(url, 'POST', urlencode(data), headers)
     except HTTPError, e:return e
-    else:return (resp, content)
+    else:return (resp, loads(content))
     
   # Edit paste
-  def edit(self):
+  def edit(self, id, text=None, private=None, lang=None):
     '''Edits a paste on RefHeap.'''
-    return None
+    try:
+      orig_p = (self.get(id))[1] # Get the original paste
+      url = '%s/paste/%s' % (self.base_url, id)
+      data = { # Check for changes to original paste
+        'contents':orig_p['contents'] if text is None else text,
+        'private':str.lower(str(orig_p['private'] if private is None else private)),
+        'language':orig_p['language'] if lang is None else lang}
+      data.update(self.credentials) # Add username/token to data hash
+      headers = {'Content-Type':'application/x-www-form-urlencoded'}
+      conn = Http(disable_ssl_certificate_validation=True)
+      resp, content = conn.request(url, 'POST', urlencode(data), headers)
+    except HTTPError, e:return e
+    else:return (resp, loads(content))
     
   # Fork paste
   def fork(self, id):
@@ -46,10 +58,16 @@ class Paste:
       headers = {'Content-Type':'application/x-www-form-urlencoded'}
       resp, content = conn.request(url, 'POST', urlencode(self.credentials), headers)
     except HTTPError, e:return e
-    else:return (resp, content)
+    else:return (resp, loads(content))
     
   # Delete paste
-  def delete(self):
+  def delete(self, id):
     '''Deletes a paste from RefHeap.'''
-    return None
+    try:
+      url = '%s/paste/%s' % (self.base_url, id)
+      conn = Http(disable_ssl_certificate_validation=True)
+      headers = {'Content-Type':'application/x-www-form-urlencoded'}
+      resp, content = conn.request(url, 'DELETE', urlencode(self.credentials), headers)
+    except HTTPError, e:return e
+    else:return (resp, None)
     
