@@ -1,62 +1,49 @@
-import json
-import urllib2
-
-from helpers import *
+from json import loads
+from httplib2 import Http
 from urllib import urlencode
+from httplib2.socks import HTTPError
 
 class Paste:
-    base_url = 'https://refheap.com/api'
+  base_url = 'https://refheap.com/api'
+  
+  def __init__(self, username=None, token=None):
+    self.credentials = {'username':username, 'token':token}
     
-    def __init__(self, username = None, token = None):
-        self.credentials = {'username': username, 'token': token}
-        
-    # get a paste from refheap
-    def get(self, id):
-        url = '%s/paste/%s' % (self.base_url, id)
-        request = MethodRequest(url, 'GET')
-        response = urllib2.urlopen(request)
-        return json.loads(response.read())
-        
-    # fork a paste on refheap
-    def fork(self, id):
-        url = '%s/paste/%s/fork' % (self.base_url, id)
-        data = urlencode(self.credentials)
-        request = MethodRequest(url, 'POST', data)
-        response = urllib2.urlopen(request)
-        return json.loads(response.read())
-        
-    # delete a paste from refheap
-    def delete(self, id):
-        url = '%s/paste/%s' % (self.base_url, id)
-        data = urlencode(self.credentials)
-        request = MethodRequest(url, 'DELETE', data)
-        response = urllib2.urlopen(request)
-        
-    # create a new paste on refheap
-    def create(self, text, private = False, language = 'Plain Text'):
-        private = 'true' if private else 'false'
-        url = '%s/paste' % (self.base_url)
-        data = urlencode(merge(self.credentials, {
-            'private': private,
-            'language': language,
-            'contents': text}))
-            
-        request = MethodRequest(url, 'POST', data)
-        response = urllib2.urlopen(request)
-        return json.loads(response.read())
-        
-    # edit a paste on refheap
-    def edit(self, id, text, private = None, language = None):
-        paste = self.get(id)
-        private = 'true' if private else 'false'
-        url = '%s/paste/%s' % (self.base_url, id)
-        
-        data = urlencode(merge(self.credentials, {
-            'private': check(private, paste['private']),
-            'language': check(language, paste['language']),
-            'contents': check(text, paste['contents'])}))
-            
-        request = MethodRequest(url, 'POST', data)
-        response = urllib2.urlopen(request)
-        return json.loads(response.read())
-        
+  # Get paste
+  def get(self, id):
+    '''Gets a paste from RefHeap.'''
+    try:
+      url = '%s/paste/%s' % (self.base_url, id)
+      conn = Http(disable_ssl_certificate_validation=True)
+      resp, content = conn.request(url, 'GET')
+    except HTTPError, e:return e
+    else:return (resp, content)
+    
+  # Create paste
+  def create(self, text, private=False, lang='Plain Text'):
+    '''Creates a new paste on RefHeap.'''
+    try:
+      url = '%s/paste' % (self.base_url)
+      conn = Http(disable_ssl_certificate_validation=True)
+      #conn.add_credentials(self.credentials['username'], self.credentials['token'])
+      data = {'contents':text, 'private':int(private), 'language':lang}
+      data.update(self.credentials)
+      resp, content = conn.request(url, 'POST', urlencode(data))
+    except HTTPError, e:return e
+    else:return (resp, content)
+    
+  # Edit paste
+  def edit():
+    '''Edits a paste on RefHeap.'''
+    return None
+    
+  # Fork paste
+  def fork():
+    '''Creates a fork of a paste on RefHeap.'''
+    return None
+    
+  # Delete paste
+  def delete():
+    '''Deletes a paste from RefHeap.'''
+    return None
+    
